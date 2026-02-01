@@ -18,11 +18,21 @@ const transporter = nodemailer.createTransport({
 });
 
 export default async function handler(req, res) {
+  res.setHeader("Content-Type", "application/json");
+
   if (req.method !== "POST") {
     return res.status(405).json({ ok: false, error: "Method not allowed." });
   }
 
-  const { name, email, project, message } = req.body || {};
+  let body = req.body;
+  if (typeof body === "string" && body) {
+    try {
+      body = JSON.parse(body);
+    } catch {
+      return res.status(400).json({ ok: false, error: "Invalid JSON body." });
+    }
+  }
+  const { name, email, project, message } = body || {};
 
   if (!name || !email || !project || !message) {
     return res.status(400).json({ ok: false, error: "Missing required fields." });

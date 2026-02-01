@@ -33,11 +33,16 @@ window.addEventListener("scroll", () => {
 
 const form = document.querySelector(".contact-form");
 const formStatus = document.querySelector(".form-status");
+const submitBtn = form?.querySelector('button[type="submit"]');
 
 if (form) {
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
-    if (formStatus) formStatus.textContent = "Sending...";
+    if (formStatus) {
+      formStatus.textContent = "Sending...";
+      formStatus.classList.remove("success", "error");
+    }
+    if (submitBtn) submitBtn.disabled = true;
 
     try {
       const formData = new FormData(form);
@@ -47,16 +52,32 @@ if (form) {
         body: JSON.stringify(Object.fromEntries(formData)),
       });
 
+      const data = response.ok ? await response.json().catch(() => ({})) : await response.json().catch(() => ({}));
+
       if (!response.ok) {
-        throw new Error("Failed to send.");
+        const msg = data?.error || "Failed to send.";
+        throw new Error(msg);
       }
 
       form.reset();
-      if (formStatus) formStatus.textContent = "Sent. Expect a reply shortly.";
-    } catch (error) {
       if (formStatus) {
-        formStatus.textContent = "Something went wrong. Please email directly.";
+        formStatus.textContent = "Sent. Expect a reply shortly.";
+        formStatus.classList.add("success");
       }
+    } catch (err) {
+      if (formStatus) {
+        formStatus.textContent = err.message || "Something went wrong. Please email directly.";
+        formStatus.classList.add("error");
+      }
+    } finally {
+      if (submitBtn) submitBtn.disabled = false;
+    }
+  });
+
+  form.addEventListener("input", () => {
+    if (formStatus?.textContent) {
+      formStatus.textContent = "";
+      formStatus.classList.remove("success", "error");
     }
   });
 }

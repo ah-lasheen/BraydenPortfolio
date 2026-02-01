@@ -15,6 +15,10 @@
   padding: 0;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   font-family: "Space Grotesk", "Manrope", sans-serif;
   background: radial-gradient(circle at top, rgba(111, 12, 207, 0.25), transparent 60%),
@@ -420,6 +424,19 @@ main {
   font-size: 0.85rem;
   color: var(--white);
   min-height: 1.2rem;
+}
+
+.form-status.success {
+  color: #86efac;
+}
+
+.form-status.error {
+  color: #fca5a5;
+}
+
+.contact-form button[type="submit"]:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 .trust-row {
